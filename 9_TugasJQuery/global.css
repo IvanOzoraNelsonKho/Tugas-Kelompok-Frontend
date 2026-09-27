@@ -1,0 +1,57 @@
+/* mereset margin/padding dan mengatur box sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.5;
+  overflow-x: hidden; /* untuk mencegah scroll horizontal */
+}
+
+/* pengaturan gambar dan rasio 16:9 */
+.responsive-img {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+/* navigasi mobile-first dengan Flexbox vertikal */
+.navbar {
+  background-color: #4a2c11;
+  color: white;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar .logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.navbar .nav-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0px 10px;
+}
+
+/* footer bawah */
+.footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.85rem;
+}
+
+.footer p {
+  margin-bottom: 5px;
+}
