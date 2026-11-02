@@ -1,6 +1,4 @@
-// Penyimpanan data admin di localStorage (pengganti site-data.js versi lama).
-// Kunci penyimpanan sama dengan versi lama, jadi data lama tetap terbaca.
-import { useMemo, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import {
   defaultContent,
   defaultQuestions,
@@ -9,93 +7,62 @@ import {
   type QuizQuestion,
 } from "./data";
 
-const QUESTIONS_KEY = "batagor.admin.questions";
-const CONTENT_KEY = "batagor.admin.content";
-
-function readRaw(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function write(key: string, value: unknown): boolean {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function parse(raw: string | null): unknown {
-  try {
-    return JSON.parse(raw ?? "null");
-  } catch {
-    return null;
-  }
-}
-
 export function cloneDefaultQuestions(): QuizQuestion[] {
-  return JSON.parse(JSON.stringify(defaultQuestions));
+  return structuredClone(defaultQuestions);
 }
 
 export function cloneDefaultContent(): Record<ContentKey, Bi> {
-  return JSON.parse(JSON.stringify(defaultContent));
+  return structuredClone(defaultContent);
 }
 
-function parseQuestions(raw: string | null): QuizQuestion[] {
-  const saved = parse(raw);
-  return Array.isArray(saved) && saved.length
-    ? (saved as QuizQuestion[])
-    : cloneDefaultQuestions();
-}
+export const loadQuestions = () => cloneDefaultQuestions();
+export const loadContent = () => cloneDefaultContent();
 
-function parseContent(raw: string | null): Record<ContentKey, Bi> {
-  const saved = (parse(raw) ?? {}) as Partial<Record<ContentKey, Partial<Bi>>>;
-  const content = cloneDefaultContent();
-  (Object.keys(content) as ContentKey[]).forEach((key) => {
-    const item = saved[key] ?? {};
-    content[key] = {
-      id: typeof item.id === "string" ? item.id : content[key].id,
-      en: typeof item.en === "string" ? item.en : content[key].en,
-    };
+async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...init?.headers },
   });
-  return content;
+  if (!response.ok) throw new Error(`Request gagal (${response.status}).`);
+  return response.json() as Promise<T>;
 }
 
-/* ---------- Dipakai halaman admin (membaca & menulis langsung) ---------- */
-export const loadQuestions = () => parseQuestions(readRaw(QUESTIONS_KEY));
-export const loadContent = () => parseContent(readRaw(CONTENT_KEY));
 export const saveQuestions = (questions: QuizQuestion[]) =>
-  write(QUESTIONS_KEY, questions);
-export const saveContent = (content: Record<ContentKey, Bi>) =>
-  write(CONTENT_KEY, content);
+  request<QuizQuestion[]>("/api/questions", {
+    method: "PUT",
+    body: JSON.stringify(questions),
+  });
 
-/* ---------- Dipakai halaman situs (hook) ----------
-   localStorage hanya ada di browser, tidak di server. useSyncExternalStore
-   memberi nilai awal (getServerSnapshot) saat render di server, lalu otomatis
-   beralih ke isi localStorage setelah tampil di browser. */
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
+export const saveContent = (content: Record<ContentKey, Bi>) =>
+  request<Record<ContentKey, Bi>>("/api/content", {
+    method: "PUT",
+    body: JSON.stringify(content),
+  });
+
+export const fetchQuestions = () => request<QuizQuestion[]>("/api/questions");
+export const fetchContent = () =>
+  request<Record<ContentKey, Bi>>("/api/content");
 
 export function useSavedQuestions(): QuizQuestion[] {
-  const raw = useSyncExternalStore(
-    subscribe,
-    () => readRaw(QUESTIONS_KEY),
-    () => null,
-  );
-  return useMemo(() => parseQuestions(raw), [raw]);
+  const [questions, setQuestions] = useState(loadQuestions);
+  useEffect(() => {
+    fetchQuestions()
+      .then(setQuestions)
+      .catch((error: unknown) =>
+        console.error("Gagal memuat soal kuis dari SQLite.", error),
+      );
+  }, []);
+  return questions;
 }
 
 export function useSavedContent(): Record<ContentKey, Bi> {
-  const raw = useSyncExternalStore(
-    subscribe,
-    () => readRaw(CONTENT_KEY),
-    () => null,
-  );
-  return useMemo(() => parseContent(raw), [raw]);
+  const [content, setContent] = useState(loadContent);
+  useEffect(() => {
+    fetchContent()
+      .then(setContent)
+      .catch((error: unknown) =>
+        console.error("Gagal memuat konten dari SQLite.", error),
+      );
+  }, []);
+  return content;
 }

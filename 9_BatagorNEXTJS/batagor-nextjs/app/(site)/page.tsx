@@ -61,7 +61,7 @@ export default function Beranda() {
           <p>
             <C k="homeIntro" />
           </p>
-          <Link href="/sejarah" className="btn-primary">
+          <Link href="/sejarah" className="btn btn-primary">
             <L id="Pelajari Pengertiannya" en="Learn the Definition" />
           </Link>
         </div>
@@ -70,7 +70,7 @@ export default function Beranda() {
       <div className="section-inner">
         <div className="card-grid">
           {previews.map((p) => (
-            <Link key={p.href} href={p.href} className="preview-card">
+            <Link key={p.href} href={p.href} className="preview-card card">
               <Image
                 className="thumb"
                 src={p.img}

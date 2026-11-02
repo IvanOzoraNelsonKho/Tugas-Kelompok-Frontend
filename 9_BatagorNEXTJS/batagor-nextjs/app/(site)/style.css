@@ -1,8 +1,3 @@
-/* =========================================================
-     1. RESET & VARIABEL WARNA (DESIGN TOKENS)
-     Krem = latar belakang, cokelat tua = teks,
-     cokelat muda/karamel = tombol & aksen.
-  ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,20 +5,61 @@
 }
 
 :root {
-  --clr-bg: #fbf3e4; /* krem hangat, latar belakang utama */
-  --clr-bg-soft: #f1e1c4; /* krem lebih tua, untuk hero & blok selang-seling */
-  --clr-card: #fffdf8; /* putih gading, dasar kartu */
-  --clr-text: #402a19; /* cokelat tua, teks utama */
-  --clr-text-soft: #7c5b3e; /* cokelat sedang, teks sekunder */
-  --clr-accent: #c6874a; /* karamel, warna aksen & tombol */
-  --clr-accent-dark: #a66b32; /* karamel gelap, untuk hover */
-  --clr-border: #e7d2ac; /* garis pembatas lembut */
+  
+  --clr-bg: #fbf3e4;
+  --clr-bg-soft: #f1e1c4;
+  --clr-card: #fffdf8;
+  --clr-text: #402a19;
+  --clr-text-soft: #7c5b3e;
+  --clr-accent: #c6874a;
+  --clr-accent-dark: #a66b32;
+  --clr-border: #e7d2ac;
+  --clr-border: #white;
 
+  
   --radius-lg: 20px;
   --radius-md: 12px;
+  
   --shadow-soft: 0 6px 20px rgba(64, 42, 25, 0.1);
+  
   --max-width: 1100px;
+
+  --posisi-pengertian: 0px;
+  --posisi-sejarah: 0px;
+  --posisi-keduanya: 60px;
+  --posisi-timeline: -100px;
+
+  --posisi-beranda-judul: 0px;
+  --posisi-beranda-deskripsi: 0px;
+  --posisi-beranda-tombol: 0px;
+  --posisi-beranda-kartu: 0px;
+
+  --posisi-jenis-judul: 0px;
+  --posisi-jenis-utama: 0px;
+  --posisi-jenis-varian: 0px;
+  --posisi-jenis-kartu: 0px;
+
+  --posisi-cara-bikin-judul: 0px;
+  --posisi-cara-bikin-deskripsi: 0px;
+  --posisi-cara-bikin-resep: 0px;
+  --posisi-cara-bikin-langkah: 0px;
+  --posisi-cara-bikin-kartu-langkah: 0px;
+
+  --posisi-kuis-judul: 0px;
+  --posisi-kuis-deskripsi: 0px;
+  --posisi-kuis-panel: 0px;
+  --posisi-kuis-isi: 0px;
+
+  --posisi-tentang-judul: 0px;
+  --posisi-tentang-deskripsi: 0px;
+  --posisi-tentang-kartu: 0px;
+
+  --posisi-kontak-judul: 0px;
+  --posisi-kontak-deskripsi: 0px;
+  --posisi-kontak-isi: 0px;
 }
+
+/* BERLAKU UNTUK SELURUH WEBSITE PUBLIK */
 
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -34,7 +70,7 @@
 
 html {
   scroll-behavior: auto;
-} /* pergantian halaman tidak memakai smooth-scroll panjang */
+}
 
 body {
   font-family: "Nunito Sans", sans-serif;
@@ -43,7 +79,7 @@ body {
   line-height: 1.65;
   min-height: 100vh;
   display: flex;
-  flex-direction: column; /* header - main - footer tersusun vertikal */
+  flex-direction: column;
 }
 
 h1,
@@ -82,17 +118,32 @@ img,
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   margin-bottom: 2.5rem;
 }
+#jenis .page-title {
+  position: relative;
+  top: var(--posisi-jenis-judul);
+}
+#cara-bikin .page-title {
+  position: relative;
+  top: var(--posisi-cara-bikin-judul);
+}
+#quiz .page-title {
+  position: relative;
+  top: var(--posisi-kuis-judul);
+}
+#tentang-kami .page-title {
+  position: relative;
+  top: var(--posisi-tentang-judul);
+}
+#kontak .page-title {
+  position: relative;
+  top: var(--posisi-kontak-judul);
+}
 
-/* Class utilitas untuk sembunyikan elemen lewat manipulasi DOM (bukan lewat scroll) */
 .hidden {
   display: none !important;
 }
 
-/* =========================================================
-     2. PLACEHOLDER GAMBAR
-     Menggantikan posisi <img src="..."> dengan kotak warna
-     berlabel supaya layout tetap rapi saat diuji.
-  ========================================================= */
+
 .img-placeholder {
   background: linear-gradient(
     145deg,
@@ -120,9 +171,7 @@ img,
   min-height: 140px;
 }
 
-/* =========================================================
-     3. HEADER
-  ========================================================= */
+
 .site-header {
   position: sticky;
   top: 0;
@@ -210,9 +259,7 @@ img,
   border-radius: 2px;
 }
 
-/* =========================================================
-     4. UTILITAS TOMBOL & KARTU
-  ========================================================= */
+
 .btn-primary {
   display: inline-block;
   background: var(--clr-accent);
@@ -251,11 +298,7 @@ img,
   padding: 0.5rem 0;
 }
 
-/* =========================================================
-     5. PENGATURAN HALAMAN (SPA)
-     Hanya section/blok dengan class "active" yang tampil.
-     Berpindah tampilan = tambah/hapus class, bukan lompat anchor.
-  ========================================================= */
+
 .page {
   display: none;
 }
@@ -317,7 +360,7 @@ img,
   }
 }
 
-/* ---------- HALAMAN BERANDA ---------- */
+
 .hero {
   background: var(--clr-bg-soft);
 }
@@ -349,17 +392,29 @@ img,
 .hero-inner h1 {
   font-size: clamp(2.1rem, 4vw, 3rem);
   margin-bottom: 1rem;
+  position: relative;
+  top: var(--posisi-beranda-judul);
 }
 .hero-inner p {
   color: var(--clr-text-soft);
   font-size: 1.05rem;
   margin-bottom: 1.75rem;
+  position: relative;
+  top: var(--posisi-beranda-deskripsi);
+}
+.hero-inner .btn {
+  position: relative;
+  top: var(--posisi-beranda-tombol);
 }
 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.75rem;
+}
+#beranda .card-grid {
+  position: relative;
+  top: var(--posisi-beranda-kartu);
 }
 .preview-card {
   background: var(--clr-card);
@@ -384,24 +439,24 @@ img,
   font-size: 0.95rem;
 }
 
-/* ---------- HALAMAN PENGERTIAN & SEJARAH ----------
-     Bergaya poster "About / History": latar warna tebal (cokelat tua),
-     judul ala tulisan tangan, dan linimasa untuk bagian sejarah.
-     Bagian "Tentang" dan "Sejarah" sengaja tetap dalam SATU section
-     yang sama (bukan dipecah jadi dua halaman terpisah). */
+
+/* HALAMAN PENGERTIAN DAN SEJARAH */
+
+/* Ubah background seluruh halaman Pengertian/Sejarah di sini. */
 #sejarah {
   position: relative;
-  overflow: hidden; /* supaya pita dekoratif di pojok tidak meluber */
+  overflow: hidden; 
   background: var(
     --clr-text
-  ); /* latar cokelat tua yang tebal, kebalikan halaman lain */
+  ); 
 }
+/* Ubah warna semua judul di halaman Pengertian/Sejarah di sini. */
 #sejarah h2,
 #sejarah h3 {
   color: #fbf3e4;
-} /* judul jadi krem di atas latar gelap */
+} 
 
-/* Pita dekoratif di pojok kiri atas, murni hiasan visual */
+
 .corner-ribbon {
   position: absolute;
   top: 0;
@@ -411,7 +466,7 @@ img,
   pointer-events: none;
 }
 
-/* Judul bergaya tulisan tangan/spidol, khusus dipakai di halaman ini */
+
 .script-heading {
   font-family: "Permanent Marker", cursive;
   font-weight: 400;
@@ -420,7 +475,14 @@ img,
   margin-bottom: 1rem;
 }
 
-/* --- Blok "Tentang Batagor" --- */
+/* Ubah posisi tulisan Pengertian di sini. */
+#sejarah .about-text {
+  transform: translateY(
+    calc(var(--posisi-pengertian) + var(--posisi-keduanya))
+  );
+}
+
+/* BAGIAN PENGERTIAN: gambar dan tulisan "Tentang Batagor" */
 .sejarah-about-inner {
   display: flex;
   align-items: center;
@@ -451,11 +513,13 @@ img,
   transform: rotate(4deg);
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
 }
+/* Ubah warna dan ukuran paragraf Pengertian di sini. */
 .about-text p {
   color: #e9d9c2;
 }
 
-/* --- Blok "Sejarah Batagor" --- */
+
+/* BAGIAN SEJARAH: tulisan sejarah dan timeline */
 .sejarah-history-inner {
   display: flex;
   align-items: flex-start;
@@ -471,6 +535,19 @@ img,
 .history-timeline {
   flex: 1 1 320px;
 }
+
+/* Ubah posisi timeline dengan mengubah --posisi-timeline di atas. */
+.history-timeline {
+  transform: translateY(var(--posisi-timeline));
+}
+
+/* Ubah posisi tulisan Sejarah dengan mengubah --posisi-sejarah di atas. */
+.history-text {
+  transform: translateY(
+    calc(var(--posisi-sejarah) + var(--posisi-keduanya))
+  );
+}
+/* Ubah warna dan ukuran paragraf Sejarah di sini. */
 .history-text p {
   color: #e9d9c2;
   margin-bottom: 1rem;
@@ -479,7 +556,7 @@ img,
   margin-bottom: 0;
 }
 
-/* Lencana lingkaran sebagai titik awal linimasa */
+
 .timeline-badge {
   text-align: center;
   margin-bottom: 2.25rem;
@@ -506,7 +583,7 @@ img,
   font-size: 0.85rem;
 }
 
-/* Jalur linimasa bertitik-titik dengan node tiap era */
+
 .timeline-track {
   position: relative;
   padding-left: 30px;
@@ -547,13 +624,17 @@ img,
   font-size: 0.85rem;
 }
 
-/* ---------- HALAMAN JENIS BATAGOR ---------- */
+
 .jenis-top {
   display: flex;
   align-items: center;
   gap: 2.5rem;
   flex-wrap: wrap;
   margin-bottom: 3.5rem;
+}
+.jenis-top {
+  position: relative;
+  top: var(--posisi-jenis-utama);
 }
 .jenis-top-media,
 .jenis-top-text {
@@ -570,23 +651,29 @@ img,
 .sub-title {
   font-size: 1.3rem;
   margin-bottom: 0.4rem;
+  position: relative;
+  top: var(--posisi-jenis-varian);
 }
 .scroll-hint {
   color: var(--clr-text-soft);
   font-size: 0.9rem;
   margin-bottom: 1.25rem;
+  position: relative;
+  top: var(--posisi-jenis-varian);
 }
 
-/* Kontainer scroll horizontal untuk varian lain: overflow-x auto sesuai permintaan */
+
 .variant-scroll {
   display: flex;
   gap: 1.25rem;
   overflow-x: auto;
   padding-bottom: 1rem;
   scroll-snap-type: x proximity;
+  position: relative;
+  top: var(--posisi-jenis-kartu);
 }
 .variant-card {
-  flex: 0 0 220px; /* lebar tetap supaya barisnya melebihi kontainer dan bisa di-scroll */
+  flex: 0 0 220px; 
   scroll-snap-align: start;
   background: var(--clr-card);
   border: 1px solid var(--clr-border);
@@ -602,7 +689,7 @@ img,
   font-size: 0.9rem;
 }
 
-/* Sedikit gaya scrollbar agar terlihat rapi (didukung sebagian besar browser) */
+
 .variant-scroll::-webkit-scrollbar {
   height: 8px;
 }
@@ -611,18 +698,34 @@ img,
   border-radius: 999px;
 }
 
-/* ---------- HALAMAN CARA BIKIN ---------- */
+
 .section-intro {
   color: var(--clr-text-soft);
   margin-top: -1.5rem;
   margin-bottom: 2.5rem;
 }
-
-/* Fase 1: pilih resep, berjajar horizontal */
+#cara-bikin .section-intro {
+  position: relative;
+  top: var(--posisi-cara-bikin-deskripsi);
+}
+#quiz .section-intro {
+  position: relative;
+  top: var(--posisi-kuis-deskripsi);
+}
+#tentang-kami .team-intro {
+  position: relative;
+  top: var(--posisi-tentang-deskripsi);
+}
+#kontak .contact-intro {
+  position: relative;
+  top: var(--posisi-kontak-deskripsi);
+}
 .recipe-select-row {
   display: flex;
   gap: 1.75rem;
   flex-wrap: wrap;
+  position: relative;
+  top: var(--posisi-cara-bikin-resep);
 }
 .recipe-card {
   flex: 1 1 230px;
@@ -648,14 +751,18 @@ img,
   font-size: 0.95rem;
 }
 
-/* Fase 2: grid langkah (3-4 kolom otomatis menyesuaikan lebar layar) */
+
 .step-phase-title {
   margin-bottom: 1.75rem;
+  position: relative;
+  top: var(--posisi-cara-bikin-langkah);
 }
 .step-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1.25rem;
+  position: relative;
+  top: var(--posisi-cara-bikin-kartu-langkah);
 }
 .step-card {
   background: var(--clr-card);
@@ -692,7 +799,7 @@ img,
   font-size: 0.9rem;
 }
 
-/* ---------- KUIS BATAGOR ---------- */
+
 .quiz-section {
   max-width: 820px;
 }
@@ -702,9 +809,21 @@ img,
   border-radius: var(--radius-lg);
   padding: clamp(1.5rem, 5vw, 3rem);
   box-shadow: var(--shadow-soft);
+  position: relative;
+  top: var(--posisi-kuis-panel);
 }
 .quiz-state {
   text-align: center;
+  position: relative;
+  top: var(--posisi-kuis-isi);
+}
+#tentang-kami .team-grid {
+  position: relative;
+  top: var(--posisi-tentang-kartu);
+}
+#kontak .contact-grid {
+  position: relative;
+  top: var(--posisi-kontak-isi);
 }
 .quiz-state h3 {
   font-size: 1.5rem;
@@ -814,7 +933,7 @@ img,
   font-size: 2.5rem;
 }
 
-/* Fase 3: modal pop-up berisi instruksi rinci satu langkah */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -859,9 +978,7 @@ img,
   color: var(--clr-text-soft);
 }
 
-/* =========================================================
-     6. FOOTER
-  ========================================================= */
+
 .site-footer {
   margin-top: auto;
   background: var(--clr-bg-soft);

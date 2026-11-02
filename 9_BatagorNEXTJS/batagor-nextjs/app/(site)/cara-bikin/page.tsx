@@ -57,11 +57,9 @@ const recipeCards: RecipeCard[] = [
 export default function CaraBikin() {
   const { lang } = useLang();
 
-  // Fase 1 = pilih resep (recipeKey null), Fase 2 = grid langkah, Fase 3 = modal detail langkah
   const [recipeKey, setRecipeKey] = useState<RecipeKey | null>(null);
   const [stepIndex, setStepIndex] = useState<number | null>(null);
 
-  // Tombol Escape menutup modal
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setStepIndex(null);
@@ -87,7 +85,6 @@ export default function CaraBikin() {
             <L id="Cara Membuat Batagor" en="How to Make Batagor" />
           </h2>
 
-          {/* ---- Fase 1: pilih resep ---- */}
           {!recipe && (
             <div id="faseResep">
               <p className="section-intro">
@@ -130,7 +127,6 @@ export default function CaraBikin() {
             </div>
           )}
 
-          {/* ---- Fase 2: grid langkah ---- */}
           {recipe && (
             <div id="faseLangkah">
               <button
@@ -159,9 +155,6 @@ export default function CaraBikin() {
         </div>
       </section>
 
-      {/* ---- Fase 3: modal detail langkah ----
-          Diletakkan di luar <section class="page"> supaya position: fixed
-          tidak terpengaruh animasi transform milik .page */}
       <div
         className={`modal-overlay ${activeStep ? "active" : ""}`}
         onClick={(e) => {

@@ -1,12 +1,6 @@
-/* =========================================================
-   RESPONSIVE.CSS
-   Fungsi: Mengatur ulang layout untuk layar HP dan Tablet
-   ========================================================= */
-
-/* Aturan untuk Tablet dan HP (Layar di bawah 780px) */
+/* Ubah 780px jika batas pergantian layout ingin diubah. */
 @media (max-width: 780px) {
   
-  /* 1. Menu Hamburger & Navigasi (Bawaan aslimu) */
   .hamburger { display: flex; }
   .main-nav {
     position: absolute; top: 100%; left: 0; right: 0;
@@ -19,12 +13,10 @@
   .main-nav.open { display: flex; }
   .nav-link { text-align: left; }
   
-  /* 2. Mengubah susunan kolom menjadi baris (Bawaan aslimu) */
   .sejarah-about-inner, .sejarah-history-inner, .jenis-top { 
     flex-direction: column; 
   }
 
-  /* 3. Penyesuaian layout baru untuk Halaman Kontak & padding */
   #kontak .section-inner > div {
     grid-template-columns: 1fr !important;
     gap: 1.5rem !important;
@@ -50,15 +42,13 @@
   }
 }
 
-/* Aturan khusus untuk HP dengan layar sempit (di bawah 480px) */
+/* Ubah 480px untuk menentukan batas HP berukuran sempit. */
 @media (max-width: 480px) {
   
-  /* Halaman Tentang Kami: Memaksa kartu nama kelompok berjejer ke bawah */
   .card-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* Halaman Pengertian: Mengecilkan gambar agar tidak memakan layar */
   .about-media img[alt="Saus Kacang"] {
     width: 130px !important;
     height: 100px !important;
@@ -66,7 +56,6 @@
     right: -10px !important;
   }
   
-  /* Menyesuaikan gambar utama agar tetap proporsional */
   .jenis-top-media img,
   .about-media img[alt="Batagor Siap Saji"] {
     max-height: 250px !important;

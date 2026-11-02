@@ -1,9 +1,12 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import type { Bi, ContentKey, QuizQuestion } from "../lib/data";
 import {
   cloneDefaultContent,
+  fetchContent,
+  fetchQuestions,
   loadContent,
   loadQuestions,
   saveContent,
@@ -20,7 +23,6 @@ const viewTitles: Record<View, string> = {
 
 const letters = ["A", "B", "C", "D"];
 
-/* Bentuk data form soal (semua berupa string supaya mudah dipakai di <input>) */
 interface QuestionDraft {
   questionId: string;
   questionEn: string;
@@ -55,7 +57,6 @@ interface Status {
 }
 const noStatus: Status = { message: "", error: false };
 
-/* Pengaturan grup form "Konten situs" */
 const contentGroups: {
   title: string;
   caption: string;
@@ -92,8 +93,6 @@ const contentGroups: {
 
 const subscribeNoop = () => () => {};
 
-/* Halaman admin membaca localStorage, yang hanya ada di browser.
-   Jadi editor baru ditampilkan setelah kode berjalan di browser. */
 export default function AdminPage() {
   const isBrowser = useSyncExternalStore(
     subscribeNoop,
@@ -107,7 +106,6 @@ function AdminEditor() {
   const [view, setView] = useState<View>("overview");
   const [storageOk, setStorageOk] = useState<boolean>(true);
 
-  // ---- state kuis ----
   const [questions, setQuestions] = useState<QuizQuestion[]>(loadQuestions);
   const [editingIndex, setEditingIndex] = useState<number>(0);
   const [creating, setCreating] = useState<boolean>(false);
@@ -117,11 +115,37 @@ function AdminEditor() {
   const [questionStatus, setQuestionStatus] = useState<Status>(noStatus);
   const questionFieldRef = useRef<HTMLTextAreaElement>(null);
 
-  // ---- state konten ----
   const [content, setContent] = useState<Record<ContentKey, Bi>>(loadContent);
   const [contentStatus, setContentStatus] = useState<Status>(noStatus);
 
-  /* ===================== KUIS ===================== */
+  useEffect(() => {
+    fetchQuestions()
+      .then((saved) => {
+        if (saved.length === 0) {
+          throw new Error("SQLite mengembalikan daftar soal kosong.");
+        }
+        setQuestions(saved);
+        setEditingIndex(0);
+        setDraft(toDraft(saved[0]));
+      })
+      .catch((error: unknown) => {
+        console.error("Gagal memuat soal kuis dari SQLite.", error);
+        setQuestionStatus({
+          message: "Gagal memuat soal dari SQLite.",
+          error: true,
+        });
+      });
+    fetchContent()
+      .then(setContent)
+      .catch((error: unknown) => {
+        console.error("Gagal memuat konten dari SQLite.", error);
+        setContentStatus({
+          message: "Gagal memuat konten dari SQLite.",
+          error: true,
+        });
+      });
+  }, []);
+
   const selectQuestion = (index: number, list: QuizQuestion[] = questions) => {
     setCreating(false);
     setEditingIndex(index);
@@ -137,8 +161,9 @@ function AdminEditor() {
     questionFieldRef.current?.focus();
   };
 
-  const handleSaveQuestion = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveQuestion = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Mau simpan soal nih bos:", questions);
 
     const question: QuizQuestion = {
       question: { id: draft.questionId.trim(), en: draft.questionEn.trim() },
@@ -159,31 +184,35 @@ function AdminEditor() {
       nextIndex = editingIndex;
     }
 
-    const saved = saveQuestions(next);
-    setStorageOk(saved);
-    setQuestions(next);
-    selectQuestion(nextIndex, next);
-    setQuestionStatus({
-      message: saved
-        ? "Soal tersimpan."
-        : "Gagal menyimpan soal di browser ini.",
-      error: !saved,
-    });
+    try {
+      const saved = await saveQuestions(next);
+      setStorageOk(true);
+      setQuestions(saved);
+      selectQuestion(nextIndex, saved);
+      setQuestionStatus({ message: "Soal tersimpan di SQLite.", error: false });
+    } catch (error: unknown) {
+      console.error("Gagal menyimpan soal ke SQLite.", error);
+      setStorageOk(false);
+      setQuestionStatus({ message: "Gagal menyimpan soal ke SQLite.", error: true });
+    }
   };
 
-  const handleDeleteQuestion = () => {
+  const handleDeleteQuestion = async () => {
     if (creating || questions.length <= 1) return;
     if (!window.confirm("Hapus pertanyaan ini?")) return;
 
     const next = questions.filter((_, i) => i !== editingIndex);
-    const saved = saveQuestions(next);
-    setStorageOk(saved);
-    setQuestions(next);
-    selectQuestion(Math.min(editingIndex, next.length - 1), next);
-    setQuestionStatus({
-      message: saved ? "Soal dihapus." : "Gagal menyimpan perubahan.",
-      error: !saved,
-    });
+    try {
+      const saved = await saveQuestions(next);
+      setStorageOk(true);
+      setQuestions(saved);
+      selectQuestion(Math.min(editingIndex, saved.length - 1), saved);
+      setQuestionStatus({ message: "Soal dihapus dari SQLite.", error: false });
+    } catch (error: unknown) {
+      console.error("Gagal menghapus soal dari SQLite.", error);
+      setStorageOk(false);
+      setQuestionStatus({ message: "Gagal menghapus soal dari SQLite.", error: true });
+    }
   };
 
   const updateDraftOption = (
@@ -197,12 +226,11 @@ function AdminEditor() {
     });
   };
 
-  /* ===================== KONTEN ===================== */
   const updateContent = (key: ContentKey, lang: keyof Bi, value: string) => {
     setContent({ ...content, [key]: { ...content[key], [lang]: value } });
   };
 
-  const handleSaveContent = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveContent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const trimmed = Object.fromEntries(
       (Object.keys(content) as ContentKey[]).map((key) => [
@@ -211,29 +239,35 @@ function AdminEditor() {
       ]),
     ) as Record<ContentKey, Bi>;
 
-    const saved = saveContent(trimmed);
-    setContent(trimmed);
-    setStorageOk(saved);
-    setContentStatus({
-      message: saved
-        ? "Konten tersimpan. Muat ulang situs untuk melihat perubahan."
-        : "Gagal menyimpan konten di browser ini.",
-      error: !saved,
-    });
+    try {
+      const saved = await saveContent(trimmed);
+      setContent(saved);
+      setStorageOk(true);
+      setContentStatus({
+        message: "Konten tersimpan di SQLite. Muat ulang situs untuk melihat perubahan.",
+        error: false,
+      });
+    } catch (error: unknown) {
+      console.error("Gagal menyimpan konten ke SQLite.", error);
+      setStorageOk(false);
+      setContentStatus({ message: "Gagal menyimpan konten ke SQLite.", error: true });
+    }
   };
 
-  const handleResetContent = () => {
+  const handleResetContent = async () => {
     const defaults = cloneDefaultContent();
-    const saved = saveContent(defaults);
-    setContent(defaults);
-    setStorageOk(saved);
-    setContentStatus({
-      message: saved ? "Teks awal dipulihkan." : "Gagal menyimpan perubahan.",
-      error: !saved,
-    });
+    try {
+      const saved = await saveContent(defaults);
+      setContent(saved);
+      setStorageOk(true);
+      setContentStatus({ message: "Teks awal dipulihkan di SQLite.", error: false });
+    } catch (error: unknown) {
+      console.error("Gagal memulihkan konten di SQLite.", error);
+      setStorageOk(false);
+      setContentStatus({ message: "Gagal memulihkan konten.", error: true });
+    }
   };
 
-  /* ===================== TAMPILAN ===================== */
   const navItem = (v: View, label: string) => (
     <button
       className={`admin-nav-item ${view === v ? "active" : ""}`}
@@ -247,19 +281,18 @@ function AdminEditor() {
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
-        {/* <a> biasa (bukan <Link>) supaya situs dimuat ulang dengan CSS-nya sendiri */}
-        <a className="admin-brand" href="/">
+        <Link className="admin-brand" href="/">
           Batagor<small>Pengelola</small>
-        </a>
+        </Link>
         <p className="sidebar-caption">Menu</p>
         <nav className="admin-nav" aria-label="Navigasi admin">
           {navItem("overview", "Ringkasan")}
           {navItem("quiz", "Kelola kuis")}
           {navItem("content", "Konten situs")}
         </nav>
-        <a className="back-to-site" href="/">
+        <Link className="back-to-site" href="/">
           Buka situs
-        </a>
+        </Link>
       </aside>
 
       <main className="admin-main">
@@ -272,13 +305,12 @@ function AdminEditor() {
             <i aria-hidden="true"></i>
             <span className="visually-hidden">
               {storageOk
-                ? " Tersimpan di browser ini"
-                : " Penyimpanan browser tidak tersedia"}
+                ? " Terhubung ke SQLite"
+                : " Penyimpanan SQLite bermasalah"}
             </span>
           </span>
         </header>
 
-        {/* ---------- Ringkasan ---------- */}
         <section
           className={`admin-view ${view === "overview" ? "active" : ""}`}
           hidden={view !== "overview"}
@@ -329,7 +361,6 @@ function AdminEditor() {
           </section>
         </section>
 
-        {/* ---------- Kelola kuis ---------- */}
         <section
           className={`admin-view ${view === "quiz" ? "active" : ""}`}
           hidden={view !== "quiz"}
@@ -476,7 +507,6 @@ function AdminEditor() {
           </div>
         </section>
 
-        {/* ---------- Konten situs ---------- */}
         <section
           className={`admin-view ${view === "content" ? "active" : ""}`}
           hidden={view !== "content"}

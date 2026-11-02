@@ -26,7 +26,6 @@ const LangContext = createContext<LangContextValue>({
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>("id");
-  // Teks hasil suntingan admin (disimpan di localStorage)
   const content = useSavedContent();
 
   useEffect(() => {
@@ -44,13 +43,11 @@ export function useLang() {
   return useContext(LangContext);
 }
 
-/** Teks dua bahasa: <L id="Beranda" en="Home" /> */
 export function L({ id, en }: Bi) {
   const { lang } = useLang();
   return <>{lang === "id" ? id : en}</>;
 }
 
-/** Teks yang bisa disunting admin: <C k="homeTitle" /> */
 export function C({ k }: { k: ContentKey }) {
   const { lang, content } = useLang();
   return <>{content[k][lang]}</>;

@@ -7,7 +7,6 @@ import { useSavedQuestions } from "../../lib/store";
 export default function Kuis() {
   const { lang } = useLang();
 
-  // Soal bisa diubah lewat halaman admin (disimpan di localStorage)
   const questions = useSavedQuestions();
   const [started, setStarted] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
@@ -25,7 +24,7 @@ export default function Kuis() {
   };
 
   const pickAnswer = (optionIndex: number) => {
-    if (selected !== null) return; // sudah menjawab
+    if (selected !== null) return;
     setSelected(optionIndex);
     if (optionIndex === questions[index].answer) setScore(score + 1);
   };
@@ -55,8 +54,7 @@ export default function Kuis() {
           />
         </p>
 
-        <div className="quiz-panel">
-          {/* Layar awal */}
+        <div className="quiz-panel card">
           {!started && (
             <div id="quizIntro" className="quiz-state">
               <span className="quiz-mark" aria-hidden="true">
@@ -74,13 +72,12 @@ export default function Kuis() {
                   en="This quiz has 5 multiple-choice questions. Good luck!"
                 />
               </p>
-              <button className="btn-primary" type="button" onClick={startQuiz}>
+              <button className="btn btn-primary" type="button" onClick={startQuiz}>
                 <L id="Mulai Kuis" en="Start Quiz" />
               </button>
             </div>
           )}
 
-          {/* Layar pertanyaan */}
           {question && (
             <div id="quizQuestion" className="quiz-state" aria-live="polite">
               <div className="quiz-progress-row">
@@ -153,7 +150,7 @@ export default function Kuis() {
 
               {selected !== null && (
                 <button
-                  className="btn-primary"
+                  className="btn btn-primary"
                   type="button"
                   onClick={nextQuestion}
                 >
@@ -165,7 +162,6 @@ export default function Kuis() {
             </div>
           )}
 
-          {/* Layar hasil */}
           {finished && (
             <div id="quizResult" className="quiz-state" aria-live="polite">
               <span className="quiz-mark quiz-result-mark" aria-hidden="true">
@@ -193,7 +189,7 @@ export default function Kuis() {
                         "Explore the website and give it another try.",
                       )}
               </p>
-              <button className="btn-primary" type="button" onClick={startQuiz}>
+              <button className="btn btn-primary" type="button" onClick={startQuiz}>
                 <L id="Main Lagi" en="Play Again" />
               </button>
             </div>

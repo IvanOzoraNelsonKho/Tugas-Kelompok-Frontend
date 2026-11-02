@@ -60,7 +60,7 @@ export default function Kontak() {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="preview-card contact-link"
+                className="preview-card contact-link card"
               >
                 <div className="contact-link-icon" aria-hidden="true">
                   {link.icon}
@@ -86,6 +86,7 @@ export default function Kontak() {
                 <input
                   id="nama"
                   type="text"
+                  className="form-control"
                   placeholder="Masukkan nama..."
                   required
                 />
@@ -97,11 +98,12 @@ export default function Kontak() {
                 <textarea
                   id="pesan"
                   rows={5}
+                  className="form-control"
                   placeholder="Ketik pesan Anda di sini..."
                   required
                 ></textarea>
               </div>
-              <button type="submit" className="btn-primary">
+              <button type="submit" className="btn btn-primary">
                 <L id="Kirim Pesan" en="Send Message" />
               </button>
             </form>

@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local SQLite database (jika BATAGOR_DATA_DIR diarahkan ke folder proyek)
+/data/*.db
+/data/*.db-*

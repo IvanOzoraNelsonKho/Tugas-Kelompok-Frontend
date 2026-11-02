@@ -1,12 +1,9 @@
-// Data statis situs (dipindah dari site-data.js dan script.js versi lama).
-// Setiap teks punya pasangan id (Indonesia) dan en (Inggris).
-
 export type Bi = { id: string; en: string };
 
 export interface QuizQuestion {
   question: Bi;
   options: Bi[];
-  answer: number; // index jawaban benar (0-3)
+  answer: number;
 }
 
 export interface RecipeStep {

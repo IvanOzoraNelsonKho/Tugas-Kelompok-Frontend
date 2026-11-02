@@ -1,7 +1,4 @@
-/* Tambahan untuk versi Next.js.
-   Gaya yang dulu berupa atribut style="..." di index.html dipindah ke sini. */
-
-/* Link <a> yang tampil seperti tombol / kartu */
+/* Ubah padding dan border-radius di selector komponen untuk mengubah ukuran kartu. */
 a.nav-link,
 a.btn-primary,
 a.preview-card {
@@ -11,8 +8,6 @@ a.nav-link {
   display: inline-block;
 }
 
-/* Dulu elemen <button>: ukuran font & line-height bawaan browser berbeda dari
-   <a>, jadi disamakan agar tampilan tetap persis seperti versi lama. */
 a.nav-link,
 a.btn-primary {
   line-height: normal;
@@ -25,7 +20,7 @@ a.preview-card {
   color: inherit;
 }
 
-/* Gambar kartu */
+/* Ubah height dan object-fit untuk mengubah ukuran atau crop gambar kartu. */
 .thumb {
   width: 100%;
   height: 220px;
@@ -40,7 +35,6 @@ a.preview-card {
   margin-bottom: 0.85rem;
 }
 
-/* Halaman Pengertian */
 .about-media {
   max-width: 380px;
 }
@@ -65,7 +59,6 @@ a.preview-card {
   border: 4px solid #fbf3e4;
 }
 
-/* Halaman Jenis */
 .jenis-top-media {
   display: flex;
   justify-content: center;
@@ -79,7 +72,6 @@ a.preview-card {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Halaman Tentang Kami */
 .center-text {
   text-align: center;
 }
@@ -110,7 +102,6 @@ a.preview-card {
   color: var(--clr-text-soft);
 }
 
-/* Halaman Kontak */
 .contact-inner {
   max-width: 900px;
   text-align: center;
