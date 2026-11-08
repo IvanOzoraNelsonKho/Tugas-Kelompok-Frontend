@@ -16,6 +16,24 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Database
+
+The admin content and quiz data use Prisma Client with PostgreSQL.
+For local development, copy `.env.example` to `.env` and set `DATABASE_URL`
+and `DIRECT_URL` to PostgreSQL connection strings (Neon, Supabase, or another
+hosted PostgreSQL). `DATABASE_URL` can be a pooled connection for the app;
+`DIRECT_URL` should be the direct connection used for migrations:
+
+```bash
+cp .env.example .env
+npm run prisma:deploy
+npm run dev
+```
+
+The first request seeds the default content and quiz questions when the tables are empty.
+For Vercel, add both `DATABASE_URL` and `DIRECT_URL` in the project Environment Variables.
+The production build runs `prisma migrate deploy` before `next build`.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

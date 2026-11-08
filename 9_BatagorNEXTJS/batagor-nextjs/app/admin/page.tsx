@@ -122,25 +122,25 @@ function AdminEditor() {
     fetchQuestions()
       .then((saved) => {
         if (saved.length === 0) {
-          throw new Error("SQLite mengembalikan daftar soal kosong.");
+          throw new Error("Database mengembalikan daftar soal kosong.");
         }
         setQuestions(saved);
         setEditingIndex(0);
         setDraft(toDraft(saved[0]));
       })
       .catch((error: unknown) => {
-        console.error("Gagal memuat soal kuis dari SQLite.", error);
+        console.error("Gagal memuat soal kuis dari database.", error);
         setQuestionStatus({
-          message: "Gagal memuat soal dari SQLite.",
+          message: "Gagal memuat soal dari database.",
           error: true,
         });
       });
     fetchContent()
       .then(setContent)
       .catch((error: unknown) => {
-        console.error("Gagal memuat konten dari SQLite.", error);
+        console.error("Gagal memuat konten dari database.", error);
         setContentStatus({
-          message: "Gagal memuat konten dari SQLite.",
+          message: "Gagal memuat konten dari database.",
           error: true,
         });
       });
@@ -189,11 +189,11 @@ function AdminEditor() {
       setStorageOk(true);
       setQuestions(saved);
       selectQuestion(nextIndex, saved);
-      setQuestionStatus({ message: "Soal tersimpan di SQLite.", error: false });
+      setQuestionStatus({ message: "Soal tersimpan di database.", error: false });
     } catch (error: unknown) {
-      console.error("Gagal menyimpan soal ke SQLite.", error);
+      console.error("Gagal menyimpan soal ke database.", error);
       setStorageOk(false);
-      setQuestionStatus({ message: "Gagal menyimpan soal ke SQLite.", error: true });
+      setQuestionStatus({ message: "Gagal menyimpan soal ke database.", error: true });
     }
   };
 
@@ -207,11 +207,11 @@ function AdminEditor() {
       setStorageOk(true);
       setQuestions(saved);
       selectQuestion(Math.min(editingIndex, saved.length - 1), saved);
-      setQuestionStatus({ message: "Soal dihapus dari SQLite.", error: false });
+      setQuestionStatus({ message: "Soal dihapus dari database.", error: false });
     } catch (error: unknown) {
-      console.error("Gagal menghapus soal dari SQLite.", error);
+      console.error("Gagal menghapus soal dari database.", error);
       setStorageOk(false);
-      setQuestionStatus({ message: "Gagal menghapus soal dari SQLite.", error: true });
+      setQuestionStatus({ message: "Gagal menghapus soal dari database.", error: true });
     }
   };
 
@@ -244,13 +244,13 @@ function AdminEditor() {
       setContent(saved);
       setStorageOk(true);
       setContentStatus({
-        message: "Konten tersimpan di SQLite. Muat ulang situs untuk melihat perubahan.",
+        message: "Konten tersimpan di database. Muat ulang situs untuk melihat perubahan.",
         error: false,
       });
     } catch (error: unknown) {
-      console.error("Gagal menyimpan konten ke SQLite.", error);
+      console.error("Gagal menyimpan konten ke database.", error);
       setStorageOk(false);
-      setContentStatus({ message: "Gagal menyimpan konten ke SQLite.", error: true });
+      setContentStatus({ message: "Gagal menyimpan konten ke database.", error: true });
     }
   };
 
@@ -260,9 +260,9 @@ function AdminEditor() {
       const saved = await saveContent(defaults);
       setContent(saved);
       setStorageOk(true);
-      setContentStatus({ message: "Teks awal dipulihkan di SQLite.", error: false });
+      setContentStatus({ message: "Teks awal dipulihkan di database.", error: false });
     } catch (error: unknown) {
-      console.error("Gagal memulihkan konten di SQLite.", error);
+      console.error("Gagal memulihkan konten di database.", error);
       setStorageOk(false);
       setContentStatus({ message: "Gagal memulihkan konten.", error: true });
     }
@@ -305,8 +305,8 @@ function AdminEditor() {
             <i aria-hidden="true"></i>
             <span className="visually-hidden">
               {storageOk
-                ? " Terhubung ke SQLite"
-                : " Penyimpanan SQLite bermasalah"}
+                ? " Terhubung ke database"
+                : " Penyimpanan database bermasalah"}
             </span>
           </span>
         </header>

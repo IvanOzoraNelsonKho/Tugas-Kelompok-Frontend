@@ -49,7 +49,7 @@ export function useSavedQuestions(): QuizQuestion[] {
     fetchQuestions()
       .then(setQuestions)
       .catch((error: unknown) =>
-        console.error("Gagal memuat soal kuis dari SQLite.", error),
+        console.error("Gagal memuat soal kuis dari database.", error),
       );
   }, []);
   return questions;
@@ -61,7 +61,7 @@ export function useSavedContent(): Record<ContentKey, Bi> {
     fetchContent()
       .then(setContent)
       .catch((error: unknown) =>
-        console.error("Gagal memuat konten dari SQLite.", error),
+        console.error("Gagal memuat konten dari database.", error),
       );
   }, []);
   return content;
