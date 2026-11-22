@@ -77,7 +77,7 @@ async function replaceQuestionsInDatabase(questions: QuizQuestion[]) {
 
   for (const question of questions) {
     if (
-      question.options.length !== 4 ||
+      question.options.length !== 4||
       question.answer < 0 ||
       question.answer > 3 ||
       !question.question.id.trim() ||
@@ -92,25 +92,28 @@ async function replaceQuestionsInDatabase(questions: QuizQuestion[]) {
     }
   }
 
-  await prisma.$transaction(async (transaction) => {
-    await transaction.quizQuestion.deleteMany();
-    for (const question of questions) {
-      await transaction.quizQuestion.create({
-        data: {
-          questionId: question.question.id.trim(),
-          questionEn: question.question.en.trim(),
-          answer: question.answer,
-          options: {
-            create: question.options.map((option, optionIndex) => ({
-              optionIndex,
-              idText: option.id.trim(),
-              enText: option.en.trim(),
-            })),
+  await prisma.$transaction(
+    async (transaction) => {
+      await transaction.quizQuestion.deleteMany();
+      for (const question of questions) {
+        await transaction.quizQuestion.create({
+          data: {
+            questionId: question.question.id.trim(),
+            questionEn: question.question.en.trim(),
+            answer: question.answer,
+            options: {
+              create: question.options.map((option, optionIndex) => ({
+                optionIndex,
+                idText: option.id.trim(),
+                enText: option.en.trim(),
+              })),
+            },
           },
-        },
-      });
-    }
-  });
+        });
+      }
+    },
+    { timeout: 20000, maxWait: 10000 },
+  );
 }
 
 export async function replaceQuestions(questions: QuizQuestion[]) {

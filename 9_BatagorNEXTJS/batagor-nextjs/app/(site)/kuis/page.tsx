@@ -3,20 +3,29 @@
 import { useState } from "react";
 import { L, useLang } from "../../components/LanguageProvider";
 import { useSavedQuestions } from "../../lib/store";
+import type { QuizQuestion } from "./data";
+
+const QUESTIONS_PER_ROUND = 7;
 
 export default function Kuis() {
   const { lang } = useLang();
-
-  const questions = useSavedQuestions();
+  const savedQuestions = useSavedQuestions();
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [started, setStarted] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [selected, setSelected] = useState<number | null>(null);
 
+  const questions = started ? quizQuestions : savedQuestions;
+
   const copy = (idText: string, enText: string) =>
     lang === "id" ? idText : enText;
 
   const startQuiz = () => {
+    const shuffledQuestions = [...savedQuestions].sort(
+      () => Math.random() - 0.5,
+    );
+    setQuizQuestions(shuffledQuestions.slice(0, QUESTIONS_PER_ROUND));
     setIndex(0);
     setScore(0);
     setSelected(null);
@@ -68,12 +77,12 @@ export default function Kuis() {
               </h3>
               <p>
                 <L
-                  id="Kuis ini terdiri dari 5 soal pilihan ganda. Semoga berhasil!"
-                  en="This quiz has 5 multiple-choice questions. Good luck!"
+                  id="Kuis ini terdiri dari 5 soal pilihan ganda acak. Semoga berhasil!"
+                  en="This quiz has 5 random multiple-choice questions. Good luck!"
                 />
               </p>
               <button className="btn btn-primary" type="button" onClick={startQuiz}>
-                <L id="Mulai Kuis" en="Start Quiz" />
+                <L id="Mulai test" en="Start test" />
               </button>
             </div>
           )}

@@ -1,0 +1,5 @@
+# Backup files
+*.zip
+backup_progress_3utama/
+**/node_modules/
+**/.next/

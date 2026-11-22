@@ -1,17 +1,11 @@
 import { L } from "../../components/LanguageProvider";
-
-const team = [
-  { nama: "Andrian", icon: "👨🏻‍💻", peran: "Mahasiswa Teknik Informatika" },
-  { nama: "Diana", icon: "👩🏻‍💻", peran: "Mahasiswi Teknik Informatika" },
-  { nama: "Ivan", icon: "👨🏻‍💻", peran: "Mahasiswa Teknik Informatika" },
-  { nama: "Kenny", icon: "👨🏻‍💻", peran: "Mahasiswa Teknik Informatika" },
-];
+import { team } from "./data";
 
 export default function TentangKami() {
   return (
     <section id="tentang-kami" className="page active">
       <div className="section-inner">
-        <h2 className="page-title center-text">
+        <h2 className="page-title center-text" style={{ textAlign: "center" }}>
           <L id="Tim di Balik Layar" en="The Team Behind the Screen" />
         </h2>
         <p className="team-intro">
