@@ -5,7 +5,7 @@ import { L, useLang } from "../../components/LanguageProvider";
 import { useSavedQuestions } from "../../lib/store";
 import type { QuizQuestion } from "./data";
 
-const QUESTIONS_PER_ROUND = 7;
+const QUESTIONS_PER_ROUND = 5;
 
 export default function Kuis() {
   const { lang } = useLang();

@@ -105,15 +105,4 @@ export const variants: Variant[] = [
       en: "Made in small, bite-sized portions like cocktail snacks, perfect for parties or casual gatherings.",
     },
   },
-  {
-    img: "/images/wawaw.webp",
-    w: 388,
-    h: 388,
-    alt: "Batagor Ujian",
-    title: { id: "Batagor Ujian", en: "Test Batagor" },
-    text: {
-      id: "Dibuat dalam ukuran kecil seperti cocktail, cocok sebagai camilan pesta atau teman arisan.",
-      en: "Made in small, bite-sized portions like cocktail snacks, perfect for parties or casual gatherings.",
-    },
-  },
 ];
