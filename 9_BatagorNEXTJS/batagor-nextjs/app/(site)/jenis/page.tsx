@@ -1,22 +1,72 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { L } from "../../components/LanguageProvider";
 import { featuredVariant, variants } from "./data";
 
 export default function Jenis() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isPausedRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
+  // Auto-scroll pelan ke samping (looping mulus)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let animationId: number;
+    let accumulated = 0;
+    const speed = 0.6; // makin kecil makin pelan
+
+    const step = () => {
+      if (!isPausedRef.current && !isDraggingRef.current) {
+        accumulated += speed;
+        if (accumulated >= 1) {
+          const move = Math.floor(accumulated);
+          el.scrollLeft += move;
+          accumulated -= move;
+
+          if (el.scrollLeft >= el.scrollWidth / 2) {
+            el.scrollLeft = 0;
+          }
+        }
+      }
+      animationId = requestAnimationFrame(step);
+    };
+
+    animationId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+
+  // Geser manual dengan klik-tahan mouse (drag)
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    startXRef.current = e.pageX - el.offsetLeft;
+    scrollLeftRef.current = el.scrollLeft;
   };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.2;
+    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  const stopDragging = () => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+  };
+
+  // Duplikasi daftar varian supaya looping auto-scroll tidak patah
+  const loopVariants = [...variants, ...variants];
 
   return (
     <section id="jenis" className="page active">
@@ -62,28 +112,35 @@ export default function Jenis() {
               />
             </p>
           </div>
-          <div className="variant-nav-btns">
-            <button
-              type="button"
-              className="variant-nav-btn"
-              aria-label="Geser ke kiri"
-              onClick={() => scroll("left")}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="variant-nav-btn"
-              aria-label="Geser ke kanan"
-              onClick={() => scroll("right")}
-            >
-            </button>
-          </div>
         </div>
 
-        <div className="variant-scroll" ref={scrollRef}>
-          {variants.map((v) => (
-            <div className="variant-card" key={v.alt}>
+        <div
+          className="variant-scroll"
+          ref={scrollRef}
+          style={{
+            scrollBehavior: "auto",
+            cursor: isDragging ? "grabbing" : "grab",
+            userSelect: "none",
+          }}
+          onMouseEnter={() => {
+            isPausedRef.current = true;
+          }}
+          onMouseLeave={() => {
+            isPausedRef.current = false;
+            stopDragging();
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={stopDragging}
+          onTouchStart={() => {
+            isPausedRef.current = true;
+          }}
+          onTouchEnd={() => {
+            isPausedRef.current = false;
+          }}
+        >
+          {loopVariants.map((v, index) => (
+            <div className="variant-card" key={`${v.alt}-${index}`}>
               <Image
                 className="thumb-sm"
                 src={v.img}
@@ -91,6 +148,7 @@ export default function Jenis() {
                 width={v.w}
                 height={v.h}
                 sizes="260px"
+                draggable={false}
               />
               <h4>
                 <L {...v.title} />

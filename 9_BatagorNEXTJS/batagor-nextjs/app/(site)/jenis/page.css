@@ -87,42 +87,20 @@
   margin-bottom: 0;
 }
 
-.variant-nav-btns {
-  display: flex;
-  gap: 0.5rem;
-}
-.variant-nav-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--clr-card);
-  border: 1.5px solid var(--clr-border);
-  color: var(--clr-text);
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(64, 42, 25, 0.06);
-}
-.variant-nav-btn:hover {
-  background: var(--clr-accent);
-  color: #fff7ec;
-  border-color: var(--clr-accent);
-  transform: translateY(-2px);
-}
-
 .variant-scroll {
   display: flex;
   gap: 1.25rem;
   overflow-x: auto;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 1.25rem;
+  scroll-behavior: auto;
+  padding: 0.5rem 0 1.25rem;
   position: relative;
   top: var(--posisi-jenis-kartu);
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.variant-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* KUNCI: Tepat 4 kartu tanpa ada yang terpotong di desktop */
@@ -130,7 +108,6 @@
   flex: 0 0 calc((100% - (3 * 1.25rem)) / 4);
   width: calc((100% - (3 * 1.25rem)) / 4);
   box-sizing: border-box;
-  scroll-snap-align: start;
   background: var(--clr-card);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
@@ -158,18 +135,6 @@
   font-size: 0.88rem;
   line-height: 1.55;
   margin: 0;
-}
-
-.variant-scroll::-webkit-scrollbar {
-  height: 8px;
-}
-.variant-scroll::-webkit-scrollbar-track {
-  background: var(--clr-bg-soft);
-  border-radius: 999px;
-}
-.variant-scroll::-webkit-scrollbar-thumb {
-  background: var(--clr-accent);
-  border-radius: 999px;
 }
 
 @media (max-width: 900px) {
