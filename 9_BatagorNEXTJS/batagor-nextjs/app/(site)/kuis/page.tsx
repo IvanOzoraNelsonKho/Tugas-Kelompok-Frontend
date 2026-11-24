@@ -1,11 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { L, useLang } from "../../components/LanguageProvider";
 import { useSavedQuestions } from "../../lib/store";
 import type { QuizQuestion } from "./data";
 
 const QUESTIONS_PER_ROUND = 5;
+
+const SCORE_CELEBRATIONS: Record<number, { icon: string; emojis: string[] }> = {
+  5: { icon: "🏆", emojis: ["🎉", "🥳", "🏆", "🎊", "✨"] },
+  4: { icon: "🎉", emojis: ["🎉", "👏", "🤩", "🎊", "✨"] },
+  3: { icon: "😄", emojis: ["🎉", "😄", "👍", "🌟", "✨"] },
+  2: { icon: "🙂", emojis: ["👍", "🙂", "💪", "📖", "✨"] },
+  1: { icon: "💪", emojis: ["💪", "💡", "📖", "🔥", "✨"] },
+  0: { icon: "😅", emojis: ["😅", "📚", "💡", "💪", "👀"] },
+};
+
+// Posisi arah letupan emoji dari tengah ke segala penjuru
+const BURST_PARTICLES = [
+  { tx: "-180px", ty: "-110px", rot: "-25deg", delay: "0s" },
+  { tx: "-120px", ty: "-155px", rot: "18deg", delay: "0.04s" },
+  { tx: "-40px", ty: "-170px", rot: "-12deg", delay: "0.08s" },
+  { tx: "50px", ty: "-165px", rot: "22deg", delay: "0.02s" },
+  { tx: "130px", ty: "-145px", rot: "-18deg", delay: "0.06s" },
+  { tx: "190px", ty: "-95px", rot: "28deg", delay: "0.1s" },
+  { tx: "210px", ty: "-10px", rot: "-15deg", delay: "0.03s" },
+  { tx: "180px", ty: "85px", rot: "20deg", delay: "0.07s" },
+  { tx: "110px", ty: "130px", rot: "-22deg", delay: "0.05s" },
+  { tx: "20px", ty: "140px", rot: "14deg", delay: "0.09s" },
+  { tx: "-85px", ty: "130px", rot: "-16deg", delay: "0.04s" },
+  { tx: "-170px", ty: "80px", rot: "24deg", delay: "0.08s" },
+  { tx: "-210px", ty: "-15px", rot: "-20deg", delay: "0.02s" },
+  { tx: "0px", ty: "-115px", rot: "10deg", delay: "0.12s" },
+];
 
 export default function Kuis() {
   const { lang } = useLang();
@@ -46,6 +73,8 @@ export default function Kuis() {
 
   const finished = started && index >= questions.length;
   const question = started && !finished ? questions[index] : null;
+  const celebration =
+    SCORE_CELEBRATIONS[Math.min(5, Math.max(0, score))] ?? SCORE_CELEBRATIONS[0];
 
   return (
     <section id="quiz" className="page active">
@@ -172,9 +201,28 @@ export default function Kuis() {
           )}
 
           {finished && (
-            <div id="quizResult" className="quiz-state" aria-live="polite">
-              <span className="quiz-mark quiz-result-mark" aria-hidden="true">
-                !
+            <div id="quizResult" className="quiz-state quiz-result-wrap" aria-live="polite">
+              <div className="emoji-burst" aria-hidden="true">
+                {BURST_PARTICLES.map((p, i) => (
+                  <span
+                    key={i}
+                    className="emoji-particle"
+                    style={
+                      {
+                        "--tx": p.tx,
+                        "--ty": p.ty,
+                        "--rot": p.rot,
+                        "--delay": p.delay,
+                      } as CSSProperties
+                    }
+                  >
+                    {celebration.emojis[i % celebration.emojis.length]}
+                  </span>
+                ))}
+              </div>
+
+              <span className="quiz-mark quiz-result-mark quiz-result-pop" aria-hidden="true">
+                {celebration.icon}
               </span>
               <p className="quiz-result-label">
                 <L id="Skor Akhir" en="Final Score" />
