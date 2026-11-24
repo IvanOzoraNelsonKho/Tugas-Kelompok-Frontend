@@ -6,12 +6,23 @@ import { L } from "../../components/LanguageProvider";
 import { featuredVariant, variants } from "./data";
 
 export default function Jenis() {
+  // Gabungkan semua varian (indeks 0 = Batagor Original)
+  const allVariants = [featuredVariant, ...variants];
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const topCardRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
   const isDraggingRef = useRef(false);
+  const hasDraggedRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  const activeVariant = allVariants[activeIndex];
+  const otherVariants = allVariants
+    .map((item, idx) => ({ item, idx }))
+    .filter(({ idx }) => idx !== activeIndex);
 
   // Auto-scroll pelan ke samping (looping mulus)
   useEffect(() => {
@@ -20,7 +31,7 @@ export default function Jenis() {
 
     let animationId: number;
     let accumulated = 0;
-    const speed = 0.6; // makin kecil makin pelan
+    const speed = 0.6;
 
     const step = () => {
       if (!isPausedRef.current && !isDraggingRef.current) {
@@ -47,6 +58,7 @@ export default function Jenis() {
     const el = scrollRef.current;
     if (!el) return;
     isDraggingRef.current = true;
+    hasDraggedRef.current = false;
     setIsDragging(true);
     startXRef.current = e.pageX - el.offsetLeft;
     scrollLeftRef.current = el.scrollLeft;
@@ -56,8 +68,11 @@ export default function Jenis() {
     if (!isDraggingRef.current || !scrollRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.2;
-    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
+    const distance = x - startXRef.current;
+    if (Math.abs(distance) > 5) {
+      hasDraggedRef.current = true;
+    }
+    scrollRef.current.scrollLeft = scrollLeftRef.current - distance * 1.2;
   };
 
   const stopDragging = () => {
@@ -65,8 +80,20 @@ export default function Jenis() {
     setIsDragging(false);
   };
 
-  // Duplikasi daftar varian supaya looping auto-scroll tidak patah
-  const loopVariants = [...variants, ...variants];
+  // Tukar varian saat kartu diklik (bukan saat sedang drag)
+  const handleSelectVariant = (idx: number) => {
+    if (hasDraggedRef.current) return;
+    setActiveIndex(idx);
+    topCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  // Duplikasi daftar varian lainnya supaya looping auto-scroll tidak patah
+  const loopVariants = [...otherVariants, ...otherVariants];
+
+  const activeBadge =
+    "badge" in activeVariant && activeVariant.badge
+      ? activeVariant.badge
+      : { id: "Varian Pilihan", en: "Selected Variant" };
 
   return (
     <section id="jenis" className="page active">
@@ -75,27 +102,27 @@ export default function Jenis() {
           <L id="Jenis-Jenis Batagor" en="Types of Batagor" />
         </h2>
 
-        <div className="jenis-top">
+        <div className="jenis-top" ref={topCardRef}>
           <div className="jenis-top-media">
             <Image
               className="jenis-top-photo"
-              src={featuredVariant.img}
-              alt={featuredVariant.alt}
-              width={featuredVariant.w}
-              height={featuredVariant.h}
+              src={activeVariant.img}
+              alt={activeVariant.alt}
+              width={activeVariant.w}
+              height={activeVariant.h}
               sizes="(max-width: 768px) 100vw, 440px"
               priority
             />
           </div>
           <div className="jenis-top-text">
             <span className="jenis-top-badge">
-              <L {...featuredVariant.badge} />
+              <L {...activeBadge} />
             </span>
             <h3>
-              <L {...featuredVariant.title} />
+              <L {...activeVariant.title} />
             </h3>
             <p>
-              <L {...featuredVariant.text} />
+              <L {...activeVariant.detail} />
             </p>
           </div>
         </div>
@@ -107,8 +134,8 @@ export default function Jenis() {
             </h3>
             <p className="scroll-hint">
               <L
-                id="Geser ke samping untuk melihat varian lainnya."
-                en="Swipe sideways to see more variants."
+                id="Geser ke samping atau klik kartu untuk melihat detail varian."
+                en="Swipe sideways or click a card to view variant details."
               />
             </p>
           </div>
@@ -139,8 +166,13 @@ export default function Jenis() {
             isPausedRef.current = false;
           }}
         >
-          {loopVariants.map((v, index) => (
-            <div className="variant-card" key={`${v.alt}-${index}`}>
+          {loopVariants.map(({ item: v, idx }, index) => (
+            <div
+              className="variant-card"
+              key={`${v.alt}-${index}`}
+              onClick={() => handleSelectVariant(idx)}
+              style={{ cursor: "pointer" }}
+            >
               <Image
                 className="thumb-sm"
                 src={v.img}
