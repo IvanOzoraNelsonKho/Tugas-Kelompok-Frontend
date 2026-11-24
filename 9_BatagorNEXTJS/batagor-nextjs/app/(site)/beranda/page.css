@@ -131,7 +131,7 @@
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   cursor: pointer;
-  text-decoration:none;
+  text-decoration: none;
   transition: all var(--transition-base, 0.3s ease);
   box-shadow: var(--shadow-card, 0 2px 12px rgba(64, 42, 25, 0.06));
 }
@@ -167,4 +167,52 @@
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 0.85rem;
+}
+
+/* ─── RESPONSIVE BERANDA ─── */
+
+@media (max-width: 780px) {
+  .hero-inner {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: 3rem 1.25rem 2.5rem;
+    gap: 2rem;
+  }
+
+  .hero-content {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero-ornament {
+    margin: 0 auto 1rem;
+  }
+
+  .hero-media {
+    flex: none;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content h1 {
+    font-size: 1.85rem;
+  }
+
+  .hero-content p {
+    font-size: 0.98rem;
+  }
+
+  .hero-media {
+    max-width: 280px;
+  }
 }

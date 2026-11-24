@@ -51,7 +51,6 @@
   font-size: 0.95rem;
 }
 
-
 .step-phase-title {
   margin-bottom: 1.75rem;
   position: relative;
@@ -98,7 +97,6 @@
   color: var(--clr-text-soft);
   font-size: 0.9rem;
 }
-
 
 .thumb {
   width: 100%;
@@ -163,4 +161,28 @@
 .modal-box p {
   color: var(--clr-text-soft);
   line-height: 1.65;
+}
+
+/* ─── RESPONSIVE CARA BIKIN ─── */
+
+@media (max-width: 900px) {
+  .step-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .recipe-select-row {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .step-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .modal-box {
+    padding: 1.5rem 1.25rem;
+  }
 }
