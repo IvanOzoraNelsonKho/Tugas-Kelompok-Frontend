@@ -177,6 +177,12 @@ h1, h2, h3 {
   background: #2e8b57;
 }
 
+.storage-status.error {
+  border-color: rgba(161, 55, 40, 0.35);
+  background: rgba(161, 55, 40, 0.08);
+  color: var(--chili);
+}
+
 .storage-status.error i { background: var(--chili); }
 
 .visually-hidden {
@@ -579,6 +585,85 @@ h1, h2, h3 {
 .content-group-heading h3 { margin: 0; font-size: 20px; }
 .content-group-heading p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 .content-group .language-fields { grid-column: 2; }
+
+/* Tabel Konten Situs */
+.content-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.content-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.content-table th {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(59, 36, 22, 0.04);
+  color: var(--brown);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.content-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.content-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.content-table-label {
+  width: 210px;
+}
+
+.content-table-label strong {
+  display: block;
+  color: var(--brown);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.content-table-label small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.content-table input,
+.content-table textarea {
+  width: 100%;
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--brown);
+  font: 15px 'Source Sans 3', sans-serif;
+  line-height: 1.45;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.content-table input:focus,
+.content-table textarea:focus {
+  border-color: var(--caramel);
+  box-shadow: 0 0 0 3px rgba(185, 119, 47, 0.14);
+  outline: none;
+}
+
+.content-table textarea {
+  resize: vertical;
+}
 
 .content-actions {
   position: sticky;

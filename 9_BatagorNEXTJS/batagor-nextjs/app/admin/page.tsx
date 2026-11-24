@@ -186,6 +186,7 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
   const [view, setView] = useState<View>("overview");
   const [storageOk, setStorageOk] = useState<boolean>(true);
   const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const [questions, setQuestions] = useState<QuizQuestion[]>(loadQuestions);
   const [editingIndex, setEditingIndex] = useState<number>(0);
@@ -200,31 +201,53 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
   const [contentStatus, setContentStatus] = useState<Status>(noStatus);
 
   useEffect(() => {
-    fetchQuestions()
-      .then((saved) => {
-        if (saved.length === 0) {
-          throw new Error("Database mengembalikan daftar soal kosong.");
+    Promise.allSettled([fetchQuestions(), fetchContent()]).then(
+      ([questionsResult, contentResult]) => {
+        let hasError = false;
+
+        if (questionsResult.status === "fulfilled") {
+          const saved = questionsResult.value;
+          if (saved.length === 0) {
+            hasError = true;
+            console.error("Database mengembalikan daftar soal kosong.");
+            setQuestionStatus({
+              message: "Gagal memuat soal dari database.",
+              error: true,
+            });
+          } else {
+            setQuestions(saved);
+            setEditingIndex(0);
+            setDraft(toDraft(saved[0]));
+          }
+        } else {
+          hasError = true;
+          console.error(
+            "Gagal memuat soal kuis dari database.",
+            questionsResult.reason,
+          );
+          setQuestionStatus({
+            message: "Gagal memuat soal dari database.",
+            error: true,
+          });
         }
-        setQuestions(saved);
-        setEditingIndex(0);
-        setDraft(toDraft(saved[0]));
-      })
-      .catch((error: unknown) => {
-        console.error("Gagal memuat soal kuis dari database.", error);
-        setQuestionStatus({
-          message: "Gagal memuat soal dari database.",
-          error: true,
-        });
-      });
-    fetchContent()
-      .then(setContent)
-      .catch((error: unknown) => {
-        console.error("Gagal memuat konten dari database.", error);
-        setContentStatus({
-          message: "Gagal memuat konten dari database.",
-          error: true,
-        });
-      });
+
+        if (contentResult.status === "fulfilled") {
+          setContent(contentResult.value);
+        } else {
+          hasError = true;
+          console.error(
+            "Gagal memuat konten dari database.",
+            contentResult.reason,
+          );
+          setContentStatus({
+            message: "Gagal memuat konten dari database.",
+            error: true,
+          });
+        }
+
+        setStorageOk(!hasError);
+      },
+    );
   }, []);
 
   const selectQuestion = (index: number, list: QuizQuestion[] = questions) => {
@@ -244,7 +267,6 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
 
   const handleSaveQuestion = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Mau simpan soal nih bos:", questions);
 
     const question: QuizQuestion = {
       question: { id: draft.questionId.trim(), en: draft.questionEn.trim() },
@@ -278,9 +300,14 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
     }
   };
 
-  const handleDeleteQuestion = async () => {
+  const openDeleteModal = () => {
     if (creating || questions.length <= 1) return;
-    if (!window.confirm("Hapus pertanyaan ini?")) return;
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteQuestion = async () => {
+    setShowDeleteModal(false);
+    if (creating || questions.length <= 1) return;
 
     const next = questions.filter((_, i) => i !== editingIndex);
     try {
@@ -517,7 +544,7 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
                       ? "Kuis harus memiliki minimal satu soal"
                       : "Hapus soal ini"
                   }
-                  onClick={handleDeleteQuestion}
+                  onClick={openDeleteModal}
                 >
                   Hapus soal
                 </button>
@@ -682,7 +709,7 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
                   ))}
                 </tbody>
               </table>
-            </div> 
+            </div>
 
             <div className="form-actions content-actions">
               <p
@@ -705,6 +732,45 @@ function AdminEditor({ onLogout }: { onLogout: () => void }) {
           </form>
         </section>
       </main>
+
+      {showDeleteModal && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="delete-modal-title">Hapus Pertanyaan?</h2>
+            <p>
+              Apakah Anda yakin ingin menghapus pertanyaan nomor{" "}
+              {String(editingIndex + 1).padStart(2, "0")} ini? Tindakan ini
+              tidak dapat dibatalkan.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="button-secondary"
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                className="button-logout-confirm"
+                type="button"
+                onClick={confirmDeleteQuestion}
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showLogoutModal && (
         <div
           className="modal-backdrop"
