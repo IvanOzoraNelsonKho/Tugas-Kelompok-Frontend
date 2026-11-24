@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { L } from "../../components/LanguageProvider";
+import type { Bi } from "../../lib/data";
 import { featuredVariant, variants } from "./data";
 
 export default function Jenis() {
@@ -90,9 +91,9 @@ export default function Jenis() {
   // Duplikasi daftar varian lainnya supaya looping auto-scroll tidak patah
   const loopVariants = [...otherVariants, ...otherVariants];
 
-  const activeBadge =
+  const activeBadge: Bi =
     "badge" in activeVariant && activeVariant.badge
-      ? activeVariant.badge
+      ? (activeVariant.badge as Bi)
       : { id: "Varian Pilihan", en: "Selected Variant" };
 
   return (
